@@ -372,7 +372,7 @@ export default function AddWorkout() {
           style={styles.saveButton}
           onPress={handleSave}
         >
-          <Ionicons name="checkmark-circle-outline" size={24} color={C.WHITE} />
+          <Ionicons name="checkmark-circle-outline" size={24} color={COLORS.WHITE} />
           <Text style={styles.saveButtonText}>Save Workout</Text>
         </TouchableOpacity>
       </ScrollView>
