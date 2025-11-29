@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
     CUSTOM_TYPES: '@stepup_custom_types',
     USER: '@stepup_user',
     REST_DAYS: '@stepup_rest_days',
+    REGISTERED_USERS: '@stepup_registered_users',
 };
 
 
@@ -222,6 +223,46 @@ export const getUser = async () => {
     } catch (e) {
         console.error("Error reading user:", e);
         return null;
+    }
+};
+
+export const getRegisteredUsers = async () => {
+    try {
+        const jsonValue = await AsyncStorage.getItem(STORAGE_KEYS.REGISTERED_USERS);
+        return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+        console.error("Error reading registered users:", e);
+        return [];
+    }
+};
+export const registerUser = async (user) => {
+    try {
+        const existingUsers = await getRegisteredUsers();
+        if (existingUsers.some(u => u.email === user.email)) {
+            return { success: false, message: "User already exists" };
+        }
+        const newUsers = [...existingUsers, user];
+        await AsyncStorage.setItem(STORAGE_KEYS.REGISTERED_USERS, JSON.stringify(newUsers));
+        await saveUser(user);
+        return { success: true, message: "Registration successful" };
+    } catch (e) {
+        console.error("Error registering user:", e);
+        return { success: false, message: "Registration failed" };
+    }
+};
+export const loginUser = async (email, password) => {
+    try {
+        const existingUsers = await getRegisteredUsers();
+        const user = existingUsers.find(u => u.email === email && u.password === password);
+        if (user) {
+            await saveUser(user);
+            return { success: true, message: "Login successful" };
+        } else {
+            return { success: false, message: "Invalid email or password" };
+        }
+    } catch (e) {
+        console.error("Error logging in:", e);
+        return { success: false, message: "Login failed" };
     }
 };
 

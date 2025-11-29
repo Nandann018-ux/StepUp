@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { saveUser } from '../utils/storage';
+import { registerUser } from '../utils/storage';
 
 export default function Register({ navigation }) {
     const [name, setName] = useState('');
@@ -14,14 +14,14 @@ export default function Register({ navigation }) {
         }
 
         const user = { name, email, password };
-        const success = await saveUser(user);
+        const result = await registerUser(user);
 
-        if (success) {
-            Alert.alert('Success', 'Registration successful!', [
+        if (result.success) {
+            Alert.alert('Success', result.message, [
                 { text: 'OK', onPress: () => navigation.replace('Home') }
             ]);
         } else {
-            Alert.alert('Error', 'Failed to save user data');
+            Alert.alert('Error', result.message);
         }
     };
 

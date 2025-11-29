@@ -13,7 +13,7 @@ import {
   Keyboard
 } from "react-native";
 import { COLORS, FONTS, SIZES } from "../constants/theme";
-import { saveUser } from "../utils/storage";
+import { loginUser } from "../utils/storage";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -25,19 +25,11 @@ export default function Login({ navigation }) {
       return;
     }
 
-    // Mock login logic - in a real app, verify against backend or stored users
-    // For now, we'll just save a dummy user session
-    const user = {
-      email: email,
-      name: email.split('@')[0], // Use part of email as name
-      isLoggedIn: true,
-    };
-
-    const success = await saveUser(user);
-    if (success) {
+    const result = await loginUser(email, password);
+    if (result.success) {
       navigation.replace("Home");
     } else {
-      Alert.alert("Error", "Failed to save login session");
+      Alert.alert("Error", result.message);
     }
   };
 
