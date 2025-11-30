@@ -51,10 +51,9 @@ const CircularProgress = ({ percentage, color, label }) => {
 const WeeklyGoals = () => {
     const [hasGoal, setHasGoal] = useState(false);
     const [showInputForm, setShowInputForm] = useState(false);
-    const [activeTab, setActiveTab] = useState('steps');
+    const [activeTab, setActiveTab] = useState('calories');
     const [selectedPoint, setSelectedPoint] = useState(null);
     const [goals, setGoals] = useState({
-        targetSteps: '',
         targetCalories: '',
         targetMinutes: '',
         targetWorkouts: ''
@@ -82,7 +81,6 @@ const WeeklyGoals = () => {
                 const savedGoal = await getLatestGoal();
                 if (savedGoal) {
                     setGoals({
-                        targetSteps: savedGoal.targetSteps?.toString() || '',
                         targetCalories: savedGoal.targetCalories?.toString() || '',
                         targetMinutes: savedGoal.targetMinutes?.toString() || '',
                         targetWorkouts: savedGoal.targetWorkouts?.toString() || ''
@@ -99,10 +97,9 @@ const WeeklyGoals = () => {
     }, []);
 
     const handleSaveGoal = async () => {
-        if (goals.targetSteps && goals.targetCalories && goals.targetMinutes && goals.targetWorkouts) {
+        if (goals.targetCalories && goals.targetMinutes && goals.targetWorkouts) {
             const goalData = {
                 weekStart: new Date().toISOString().split('T')[0],
-                targetSteps: parseInt(goals.targetSteps),
                 targetCalories: parseInt(goals.targetCalories),
                 targetMinutes: parseInt(goals.targetMinutes),
                 targetWorkouts: parseInt(goals.targetWorkouts)
@@ -127,7 +124,6 @@ const WeeklyGoals = () => {
         );
     }
 
-    const currentSteps = weeklyStats.reduce((sum, day) => sum + day.steps, 0);
     const currentCalories = weeklyStats.reduce((sum, day) => sum + day.calories, 0);
     const currentMinutes = weeklyStats.reduce((sum, day) => sum + day.duration, 0);
     const currentWorkouts = weeklyStats.filter(day => day.duration > 0).length;
@@ -145,9 +141,8 @@ const WeeklyGoals = () => {
             case 'time':
                 data = weeklyStats.map(s => s.duration);
                 break;
-            case 'steps':
             default:
-                data = weeklyStats.map(s => s.steps);
+                data = weeklyStats.map(s => s.calories);
                 break;
         }
 
@@ -181,19 +176,13 @@ const WeeklyGoals = () => {
 
                     </View>
                     <Text style={styles.subtitle}>
-                        {hasGoal ? "Total Activity (kcal/steps)" : "Set your weekly target"}
+                        {hasGoal ? "Total Activity (kcal/min)" : "Set your weekly target"}
                     </Text>
 
                 </View>
 
                 {hasGoal && (
                     <View style={styles.tabs}>
-                        <TouchableOpacity
-                            style={[styles.tab, activeTab === 'steps' && styles.activeTab]}
-                            onPress={() => setActiveTab('steps')}
-                        >
-                            <Text style={activeTab === 'steps' ? styles.activeTabText : styles.tabText}>Steps</Text>
-                        </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.tab, activeTab === 'calories' && styles.activeTab]}
                             onPress={() => setActiveTab('calories')}
@@ -233,18 +222,6 @@ const WeeklyGoals = () => {
                     ) : (
                         <View style={styles.formContainer}>
                             <Text style={styles.formLabel}>Enter Weekly Targets:</Text>
-
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>Steps</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="e.g. 50000"
-                                    placeholderTextColor={COLORS.textGray}
-                                    keyboardType="numeric"
-                                    value={goals.targetSteps}
-                                    onChangeText={(text) => setGoals({ ...goals, targetSteps: text })}
-                                />
-                            </View>
 
                             <View style={styles.inputGroup}>
                                 <Text style={styles.inputLabel}>Calories (kcal)</Text>
@@ -359,11 +336,6 @@ const WeeklyGoals = () => {
                     </View>
 
                     <View style={styles.circlesContainer}>
-                        <CircularProgress
-                            percentage={getPercentage(currentSteps, goals.targetSteps)}
-                            color={COLORS.primaryBlue}
-                            label="Steps"
-                        />
                         <CircularProgress
                             percentage={getPercentage(currentCalories, goals.targetCalories)}
                             color={COLORS.primaryOrange}

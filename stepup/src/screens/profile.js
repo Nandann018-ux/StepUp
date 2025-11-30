@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUser } from "../utils/storage";
+import { getUser, getLatestGoal } from "../utils/storage";
 import { COLORS } from "../constants/theme";
 
 export default function ProfileScreen() {
@@ -41,6 +41,15 @@ export default function ProfileScreen() {
             ...prev,
             name: user.name || prev.name,
             email: user.email || prev.email,
+          }));
+        }
+
+        // Load actual goal
+        const goal = await getLatestGoal();
+        if (goal && goal.targetMinutes) {
+          setFitness(prev => ({
+            ...prev,
+            weeklyGoalMinutes: goal.targetMinutes
           }));
         }
       };

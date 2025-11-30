@@ -125,7 +125,6 @@ export const seedInitialData = async () => {
                 date: new Date().toISOString().split('T')[0], // Today
                 type: "Strength",
                 duration: 45,
-                steps: 1200,
                 calories: 300,
                 notes: "Upper body focus",
             },
@@ -134,7 +133,6 @@ export const seedInitialData = async () => {
                 date: new Date(Date.now() - 86400000).toISOString().split('T')[0], // Yesterday
                 type: "Cardio",
                 duration: 30,
-                steps: 4000,
                 calories: 250,
                 notes: "Morning run",
             },
@@ -143,7 +141,6 @@ export const seedInitialData = async () => {
                 date: new Date(Date.now() - 172800000).toISOString().split('T')[0], // 2 days ago
                 type: "Yoga",
                 duration: 60,
-                steps: 500,
                 calories: 150,
                 notes: "Relaxing flow",
             }
@@ -157,7 +154,6 @@ export const seedInitialData = async () => {
             weekStart: new Date().toISOString().split('T')[0],
             targetMinutes: 300,
             targetWorkouts: 5,
-            targetSteps: 50000,
             targetCalories: 2000
         };
         await AsyncStorage.setItem(STORAGE_KEYS.WEEKLY_GOALS, JSON.stringify([initialGoal]));
@@ -180,14 +176,12 @@ export const getWeeklyStats = async () => {
 
     const stats = last7Days.map(dateStr => {
         const dayWorkouts = workouts.filter(w => w.date === dateStr);
-        const totalSteps = dayWorkouts.reduce((sum, w) => sum + (parseInt(w.steps) || 0), 0);
         const totalCalories = dayWorkouts.reduce((sum, w) => sum + (parseInt(w.calories) || 0), 0);
         const totalDuration = dayWorkouts.reduce((sum, w) => sum + (parseInt(w.duration) || 0), 0);
 
         const dateObj = new Date(dateStr);
         return {
             label: days[dateObj.getDay()],
-            steps: totalSteps,
             calories: totalCalories,
             duration: totalDuration,
             fullDate: dateStr
@@ -198,7 +192,7 @@ export const getWeeklyStats = async () => {
         labels: stats.map(s => s.label),
         datasets: [
             {
-                data: stats.map(s => s.steps),
+                data: stats.map(s => s.calories),
                 strokeWidth: 2
             }
         ],

@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 const TodayCard = () => {
     const [todayStats, setTodayStats] = useState({
-        steps: 0,
         calories: 0,
         duration: 0,
         workoutCount: 0
@@ -31,11 +30,10 @@ const TodayCard = () => {
 
             // Calculate totals
             const stats = todayWorkouts.reduce((acc, workout) => ({
-                steps: acc.steps + (parseInt(workout.steps) || 0),
                 calories: acc.calories + (parseInt(workout.calories) || 0),
                 duration: acc.duration + (parseInt(workout.duration) || 0),
                 workoutCount: acc.workoutCount + 1
-            }), { steps: 0, calories: 0, duration: 0, workoutCount: 0 });
+            }), { calories: 0, duration: 0, workoutCount: 0 });
 
             setTodayStats(stats);
             setGoal(currentGoal);
@@ -47,10 +45,10 @@ const TodayCard = () => {
     };
 
     const getProgressPercentage = () => {
-        if (!goal || !goal.targetSteps) return 0;
-        // Calculating daily target
-        const dailyTarget = goal.targetSteps / 7;
-        const percent = (todayStats.steps / dailyTarget) * 100;
+        if (!goal || !goal.targetMinutes) return 0;
+        // Calculating daily target based on minutes (since steps are gone)
+        const dailyTarget = goal.targetMinutes / 7;
+        const percent = (todayStats.duration / dailyTarget) * 100;
         return Math.min(percent, 100);
     };
 
@@ -101,10 +99,6 @@ const TodayCard = () => {
                 <Text style={styles.activityName}>
                     {todayStats.workoutCount === 0 ? 'Start your day!' : `Today's Activity`}
                 </Text>
-                <View style={styles.statItem}>
-                    <Ionicons name="footsteps" size={14} color={COLORS.primaryOrange} />
-                    <Text style={styles.statValue}>{todayStats.steps.toLocaleString()}</Text>
-                </View>
                 <View style={styles.statItem}>
                     <Ionicons name="flame" size={14} color={COLORS.primaryOrange} />
                     <Text style={styles.statValue}>{todayStats.calories} kcal</Text>
